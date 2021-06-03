@@ -2,6 +2,7 @@ import './styles.scss';
 import countryNamesTpl from './templates/countries.hbs';
 import countryNameTpl from './templates/country.hbs';
 import featchArticles from './js/fetchCountries';
+import { reset } from './utils/utils';
 
 import { info, error } from '@pnotify/core';
 import '@pnotify/core/dist/PNotify.css';
@@ -13,9 +14,18 @@ const ul = document.querySelector('.js-infoCountries');
 const countryInfo = document.querySelector('.countryInfo');
 
 const enteringTextToSearch = debounce(() => {
-  featchArticles(input.value)
+  const value = input.value.trim();
+  if (!value) {
+    reset(input);
+    return;
+  }
+
+  featchArticles(value)
     .then(resp => {
       addList(resp);
+      if (resp.length === 1) {
+        reset(input);
+      }
     })
     .catch(errors => {
       console.error(errors);
